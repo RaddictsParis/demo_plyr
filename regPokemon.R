@@ -1,3 +1,5 @@
+# Meetup Paris R Addicts
+
 # dlply :
 library("plyr")
 library("data.table")
@@ -14,12 +16,12 @@ morphology <- as.data.table(morphology)
 pkmVol <- morphology[Type1 == "Vol"]
 plot(pkmVol$Height, pkmVol$Weight)
 
-# et ensuite avec un ldply générer un tableau qui contient le coef
+# et ensuite avec un ldply g?n?rer un tableau qui contient le coef
 dfCoef <- ldply(listeRegType,.fun = function(maListe){coef(maListe)})
 
-# de chacun des modèles et ça renvoie une liste de modeles on pourra voir par
-# exemple que le type pierre le coef est super élevé alors que pr el type
-# spectre il doit être faible
+# de chacun des mod?les et ?a renvoie une liste de modeles on pourra voir par
+# exemple que le type pierre le coef est super ?lev? alors que pr el type
+# spectre il doit ?tre faible
 dfCoef <- as.data.table(dfCoef)
 dfCoef[ Type1 %in% c("Vol", "Acier", "Combat", "Sol")]
 
