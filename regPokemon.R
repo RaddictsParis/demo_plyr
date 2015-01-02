@@ -1,29 +1,39 @@
 # Meetup Paris R Addicts
+#
+# DEMONSTRATION DU PACKAGE PLYR
+# Timeri Veccella
+###############################
 
 # dlply :
 library("plyr")
 library("data.table")
+
+# Charger les donnees. Le tableau "morphology" contient une ligne par pokemon
+# avec pour chacun le nom, la taille, le poids et le type. Un pokemon a un type
+# principal (variable "Type1") et peut avoir un type secondaire ("Type2").
+load("morphology.rda")
+
+morphology <- as.data.table(morphology)
 Encoding(levels(morphology$Type1)) <- "UTF-8"
 
 # pour chaque element faire une regression du poids en fonction de la taille
-# avec dlply 
+# avec dlply.
+# Le résultat de chaque régression est stocké dans une liste.
 listeRegType <- dlply(morphology, .variables = .(Type1), .fun = function(donnees)
 {
   lm(log(Weight) ~ log(Height), data = donnees)
 }, .progress = "text")
+head(listeRegType)
 
-morphology <- as.data.table(morphology)
-pkmVol <- morphology[Type1 == "Vol"]
-plot(pkmVol$Height, pkmVol$Weight)
+# Ensuite generer avec ldply un tableau qui contient les coefficients
+# de chacun des modeles. On pourra voir par
+# exemple que le type pierre la constante est super eleve alors que pour le type
+# spectre elle doit etre faible.
 
-# et ensuite avec un ldply g?n?rer un tableau qui contient le coef
 dfCoef <- ldply(listeRegType,.fun = function(maListe){coef(maListe)})
+dfCoef
 
-# de chacun des mod?les et ?a renvoie une liste de modeles on pourra voir par
-# exemple que le type pierre le coef est super ?lev? alors que pr el type
-# spectre il doit ?tre faible
-dfCoef <- as.data.table(dfCoef)
-dfCoef[ Type1 %in% c("Vol", "Acier", "Combat", "Sol")]
+# Super graphique !
 
 dfCoef$Couleur <- c("grey","orange", "purple",
                     "steelblue", "gold","darkorange",
@@ -31,8 +41,8 @@ dfCoef$Couleur <- c("grey","orange", "purple",
                     "limegreen","magenta4","maroon2","moccasin",
                     "navajowhite3","mediumpurple3","peachpuff4",
                     "mediumpurple")
-# graphiques :
-png("D:\\MeetUp\\Raddicts\\presentation\\8 meetup\\interceptHeight.png",
+
+png("interceptHeight.png",
     height= 600,width=1000,
     pointsize = 20)
 plot(dfCoef$`(Intercept)`,dfCoef$`log(Height)`, pch = 25,
